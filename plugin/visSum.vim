@@ -32,31 +32,13 @@ if exists('g:loaded_visSum') && g:loaded_visSum == s:this_version
 endif
 let g:loaded_visSum = s:this_version
 
-"Mappings {{{
-" clean up existing key mappings upon re-loading of script
-if hasmapto('<Plug>SumNum')
-	nunmap \su
-	vunmap \su
-	nunmap <Plug>SumNum
-	vunmap <Plug>SumNum
-endif
-
-" Key mappings
-nmap <silent> <unique> <Leader>su <Plug>SumNum
-vmap <silent> <unique> <Leader>su <Plug>SumNum
-
 if has('float')
 	" Call the floating-point version of the function
-	nmap <silent> <unique> <script> <Plug>SumNum	:call <SID>SumNumbers_Float() <CR>
-	vmap <silent> <unique> <script> <Plug>SumNum	:call <SID>SumNumbers_Float() <CR>
-	command! -nargs=? -range -register VisSum call <SID>SumNumbers_Float("<reg>")
+	command! -nargs=? -range -register Sum call <SID>SumNumbers_Float("<reg>")
 else
 	" Call the integer version of the function
-	nmap <silent> <unique> <script> <Plug>SumNum	:call <SID>SumNumbers_Int() <CR>
-	vmap <silent> <unique> <script> <Plug>SumNum	:call <SID>SumNumbers_Int() <CR>
-	command! -nargs=? -range -register VisSum call <SID>SumNumbers_Int("<reg>")
+	command! -nargs=? -range -register Sum call <SID>SumNumbers_Int("<reg>")
 endif
-"}}}
 
 function! <SID>SumNumbers_Float(...) range  "{{{
 	let l:sum = 0.0
@@ -100,7 +82,13 @@ function! <SID>SumNumbers_Float(...) range  "{{{
 	endif
 
 	redraw
-	echo "sum = " l:sum
+
+	echo l:sum
+
+    if has('mac')
+	    call system('pbcopy', l:sum)
+    endif
+
 	"save the sum in the variable b:sum, and optionally
 	"into the register specified by the user
 	let b:sum = l:sum
